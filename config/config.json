@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "report-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/reportDashboard/ReportDashboardWebPart.js",
+          "manifest": "./src/webparts/reportDashboard/ReportDashboardWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ReportDashboardWebPartStrings": "lib/webparts/reportDashboard/loc/{locale}.js"
+  }
+}

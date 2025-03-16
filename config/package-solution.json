@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-report-dashboard-client-side-solution",
+    "id": "f9b18650-dd6e-41a0-8c85-99d76214ad7e",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "SpfxReportDashboard description"
+      },
+      "longDescription": {
+        "default": "SpfxReportDashboard description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "spfx-report-dashboard Feature",
+        "description": "The feature that activates elements of the spfx-report-dashboard solution.",
+        "id": "631e5c59-30fb-43aa-90f3-8195f990a70b",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-report-dashboard.sppkg"
+  }
+}
