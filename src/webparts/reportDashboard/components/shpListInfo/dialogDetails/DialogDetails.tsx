@@ -87,7 +87,7 @@ const DialogDetails: React.FC<IDialogDetails> = (props) => {
     }
     await getservice.ShpUpdateFastLinkItem(updateItem, props.context)
       .then(() => {
-        props.onCloseDialog
+        props.onCloseDialog()
       }
       )
   }
