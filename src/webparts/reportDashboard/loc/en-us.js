@@ -15,5 +15,6 @@ define([], function () {
     "SiteUrlFieldLabel": "Inserisci URL del sito",
     "SelectedListFieldLabel": "Seleziona una lista",
     "CityFieldLabel": "Inserisci nome città",
+    "SymbolFieldLabel":"Inserisci simbolo per visualizzare andamento",
   }
 });

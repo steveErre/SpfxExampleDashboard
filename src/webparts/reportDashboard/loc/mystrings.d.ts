@@ -14,6 +14,7 @@ declare interface IReportDashboardWebPartStrings {
   SiteUrlFieldLabel: string;
   SelectedListFieldLabel: string;
   CityFieldLabel: string;
+  SymbolFieldLabel:string;
 }
 
 declare module 'ReportDashboardWebPartStrings' {

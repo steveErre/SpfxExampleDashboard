@@ -9,7 +9,18 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
-
+import { createV9Theme } from "@fluentui/react-migration-v8-v9";
+import {
+  FluentProvider,
+  FluentProviderProps,
+  teamsDarkTheme,
+  teamsLightTheme,
+  webLightTheme,
+  webDarkTheme,
+  Theme,
+  IdPrefixProvider,
+} from "@fluentui/react-components";
+import { Theme as Theme_2 } from "@fluentui/react";
 import * as strings from 'ReportDashboardWebPartStrings';
 import ReportDashboard from './components/ReportDashboard';
 import { IReportDashboardProps } from './components/IReportDashboardProps';
@@ -17,11 +28,23 @@ import { IReportDashboardProps } from './components/IReportDashboardProps';
 import { WeatherData } from '../models/IWeatherData';
 import { IDropdownOption } from '@fluentui/react';
 
+export enum AppMode {
+  SharePoint,
+  SharePointLocal,
+  Teams,
+  TeamsLocal,
+  Office,
+  OfficeLocal,
+  Outlook,
+  OutlookLocal,
+}
+
 export interface IReportDashboardWebPartProps {
   description: string;
   siteUrl: string;
   selectedList: string;
   city: string;
+  symbol: string;
 }
 
 export default class ReportDashboardWebPart extends BaseClientSideWebPart<IReportDashboardWebPartProps> {
@@ -31,6 +54,9 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
   private _weatherData: WeatherData;
   private lists: IDropdownOption[] = [];
   private _listsDisabled: boolean = true;
+  private _appMode: AppMode = AppMode.SharePoint;
+  private _theme: Theme = webLightTheme;
+
 
   public render(): void {
     const element: React.ReactElement<IReportDashboardProps> = React.createElement(
@@ -44,17 +70,50 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
         weatherData: this._weatherData,
         selectedList: this.properties.selectedList,
         siteUrl: this.properties.siteUrl,
-        city: this.properties.city 
+        city: this.properties.city,
+        context: this.context,
+        symbol: this.properties.symbol
       }
     );
 
-    ReactDom.render(element, this.domElement);
+    //wrap the component with the Fluent UI 9 Provider.
+    const fluentElement: React.ReactElement<FluentProviderProps> =
+      React.createElement(
+        FluentProvider,
+        {
+          theme:
+            this._appMode === AppMode.Teams ||
+              this._appMode === AppMode.TeamsLocal
+              ? this._isDarkTheme
+                ? teamsDarkTheme
+                : teamsLightTheme
+              : this._appMode === AppMode.SharePoint ||
+                this._appMode === AppMode.SharePointLocal
+                ? this._isDarkTheme
+                  ? webDarkTheme
+                  : this._theme
+                : this._isDarkTheme
+                  ? webDarkTheme
+                  : webLightTheme,
+        },
+        element
+      );
+
+    const myApp: React.ReactElement = React.createElement(
+      IdPrefixProvider,
+      {
+        value: "app-SkillTest",
+      },
+      fluentElement
+    );
+
+    ReactDom.render(myApp, this.domElement);
   }
 
   protected async onInit(): Promise<void> {
-    
-   
-    
+
+
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
@@ -93,18 +152,14 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
     if (!currentTheme) {
       return;
     }
-
     this._isDarkTheme = !!currentTheme.isInverted;
-    const {
-      semanticColors
-    } = currentTheme;
 
-    if (semanticColors) {
-      this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
-      this.domElement.style.setProperty('--link', semanticColors.link || null);
-      this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
+    if (
+      this._appMode === AppMode.SharePoint ||
+      this._appMode === AppMode.SharePointLocal
+    ) {
+      this._theme = createV9Theme(currentTheme as Theme_2, webLightTheme);
     }
-
   }
 
   protected onDispose(): void {
@@ -122,11 +177,11 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
     try {
       const response: SPHttpClientResponse = await this.context.spHttpClient.get(endpoint, SPHttpClient.configurations.v1);
       const data = await response.json();
-      
+
       if (data.value) {
-        this.lists = data.value.map((list:any) => ({ key: list.Id, text: list.Title }));
+        this.lists = data.value.map((list: any) => ({ key: list.Title, text: list.Title }));
       }
-      
+      this._listsDisabled = this.lists ? false : true;
       this.context.propertyPane.refresh();
       this.render();
     } catch (error) {
@@ -145,7 +200,7 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
   protected async onPropertyPaneConfigurationStart(): Promise<void> {
     // disable the SiteCollection selector until list have been loaded
     this._listsDisabled = !this.properties.siteUrl;
-    if(this.properties.siteUrl){
+    if (this.properties.siteUrl) {
       this.loadLists();
     }
 
@@ -154,7 +209,7 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
     this.context.propertyPane.refresh();
 
     //recupero elenco sites collection
-      
+
 
     // remove the loading indicator
     // this.loadingIndicator = false;
@@ -187,7 +242,10 @@ export default class ReportDashboardWebPart extends BaseClientSideWebPart<IRepor
                   options: this.lists,
                   selectedKey: this.properties.selectedList,
                   disabled: this._listsDisabled
-                })
+                }),
+                PropertyPaneTextField('symbol', {
+                  label: strings.SymbolFieldLabel,
+                }),
               ]
             }
           ]

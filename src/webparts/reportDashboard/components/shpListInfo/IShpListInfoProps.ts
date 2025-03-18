@@ -1,6 +1,7 @@
-import { IListItem } from "../../../models/IListItem";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
 
 export interface IShpListInfo{
-   items: IListItem[];
+   listName:string;
    label:string;
+   context:WebPartContext;
 }

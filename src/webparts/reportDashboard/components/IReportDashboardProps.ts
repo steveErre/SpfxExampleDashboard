@@ -1,3 +1,4 @@
+import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { WeatherData } from "../../models/IWeatherData";
 
 export interface IReportDashboardProps {
@@ -10,4 +11,6 @@ export interface IReportDashboardProps {
   selectedList: string;
   siteUrl: string;
   city: string;
+  context:WebPartContext;
+  symbol:string;
 }
